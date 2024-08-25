@@ -88,6 +88,8 @@ type Graph[K comparable, T any] interface {
 	// doesn't exist.
 	Vertex(hash K) (T, error)
 
+	Vertices() ([]K, error)
+
 	// VertexWithProperties returns the vertex with the given hash along with
 	// its properties or ErrVertexNotFound if it doesn't exist.
 	VertexWithProperties(hash K) (T, VertexProperties, error)
@@ -129,6 +131,9 @@ type Graph[K comparable, T any] interface {
 	// Edges returns a slice of all edges in the graph. These edges are of type
 	// Edge[K] and hence will contain the vertex hashes, not the vertex values.
 	Edges() ([]Edge[K], error)
+
+	InEdges(hash K) (map[K]Edge[K], error)
+	OutEdges(hash K) (map[K]Edge[K], error)
 
 	// UpdateEdge updates the edge joining the two given vertices with the data
 	// provided in the given functional options. Valid functional options are:

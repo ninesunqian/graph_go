@@ -2,6 +2,7 @@ package graph
 
 import (
 	"fmt"
+	"maps"
 	"sync"
 )
 
@@ -59,6 +60,10 @@ type Store[K comparable, T any] interface {
 	//
 	// If the edge doesn't exist, ErrEdgeNotFound should be returned.
 	Edge(sourceHash, targetHash K) (Edge[K], error)
+
+	InEdges(hash K) (map[K]Edge[K], error)
+
+	OutEdges(hash K) (map[K]Edge[K], error)
 
 	// ListEdges should return all edges in the graph in a slice.
 	ListEdges() ([]Edge[K], error)
@@ -232,6 +237,30 @@ func (s *memoryStore[K, T]) Edge(sourceHash, targetHash K) (Edge[K], error) {
 	}
 
 	return edge, nil
+}
+
+func (s *memoryStore[K, T]) InEdges(hash K) (map[K]Edge[K], error) {
+	s.lock.RLock()
+	defer s.lock.RUnlock()
+
+	inEdges, ok := s.inEdges[hash]
+	if !ok {
+		return make(map[K]Edge[K]), ErrEdgeNotFound
+	}
+
+	return maps.Clone(inEdges), nil
+}
+
+func (s *memoryStore[K, T]) OutEdges(hash K) (map[K]Edge[K], error) {
+	s.lock.RLock()
+	defer s.lock.RUnlock()
+
+	outEdges, ok := s.outEdges[hash]
+	if !ok {
+		return make(map[K]Edge[K]), ErrEdgeNotFound
+	}
+
+	return maps.Clone(outEdges), nil
 }
 
 func (s *memoryStore[K, T]) EdgeCount() (int, error) {

@@ -62,6 +62,10 @@ func (d *directed[K, T]) Vertex(hash K) (T, error) {
 	return vertex, err
 }
 
+func (d *directed[K, T]) Vertices() ([]K, error) {
+	return d.store.ListVertices()
+}
+
 func (d *directed[K, T]) VertexWithProperties(hash K) (T, VertexProperties, error) {
 	vertex, properties, err := d.store.Vertex(hash)
 	if err != nil {
@@ -160,6 +164,14 @@ func (d *directed[K, T]) Edge(sourceHash, targetHash K) (Edge[T], error) {
 
 func (d *directed[K, T]) Edges() ([]Edge[K], error) {
 	return d.store.ListEdges()
+}
+
+func (d *directed[K, T]) InEdges(hash K) (map[K]Edge[K], error) {
+	return d.store.InEdges(hash)
+}
+
+func (d *directed[K, T]) OutEdges(hash K) (map[K]Edge[K], error) {
+	return d.store.OutEdges(hash)
 }
 
 func (d *directed[K, T]) UpdateEdge(source, target K, options ...func(properties *EdgeProperties)) error {
